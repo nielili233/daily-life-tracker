@@ -477,17 +477,16 @@ body {
   .goal-head-actions { opacity: 1; }
   .sub-list { margin-top: 10px; padding-top: 10px; }
   .sub-item {
-    display: grid;
-    grid-template-columns: 20px 1fr auto;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 2px 8px;
     padding: 6px 0;
     align-items: center;
   }
-  .sub-check { grid-row: 1 / 3; grid-column: 1; width: 16px; height: 16px; font-size: 9px; }
-  .sub-title { grid-column: 2 / 4; grid-row: 1; font-size: 13px; line-height: 1.5; }
-  .sub-deadline { grid-column: 2; grid-row: 2; font-size: 11px; }
-  .sub-actions { grid-column: 3; grid-row: 2; opacity: 1; justify-self: end; }
+  .sub-check { width: 16px; height: 16px; font-size: 9px; flex-shrink: 0; }
+  .sub-title { font-size: 13px; line-height: 1.5; flex: 1; min-width: 60%; }
+  .sub-deadline { font-size: 11px; margin-left: 24px; }
+  .sub-actions { opacity: 1; margin-left: auto; }
   .btn-add-sub { font-size: 12px; padding: 7px; }
 
   /* ── Notes ── */
