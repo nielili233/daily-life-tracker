@@ -131,7 +131,7 @@ window.Store = (function() {
   }
 
   function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-  function today() { return new Date().toISOString().slice(0, 10); }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function formatDate(d) {
     if (typeof d === 'string') d = new Date(d + 'T00:00:00');
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
