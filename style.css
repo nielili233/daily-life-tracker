@@ -432,12 +432,19 @@ body {
   .goal-row-head { font-size: 13px; }
 
   /* ── Schedule ── */
-  .sch-item { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
-  .sch-check { width: 20px; height: 20px; flex-shrink: 0; }
-  .sch-time { font-size: 11px; padding: 2px 8px; order: 2; margin-left: 30px; }
-  .sch-title { font-size: 13px; width: calc(100% - 30px); order: 1; }
-  .sch-goal-tag { font-size: 12px; }
-  .sch-actions { opacity: 1; order: 3; margin-left: auto; }
+  .sch-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 10px;
+    padding: 12px 14px;
+    align-items: center;
+  }
+  .sch-check { grid-row: 1 / 3; grid-column: 1; width: 20px; height: 20px; }
+  .sch-title { grid-column: 2 / 4; grid-row: 1; font-size: 14px; line-height: 1.5; }
+  .sch-time { grid-column: 2; grid-row: 2; font-size: 11px; padding: 1px 8px; justify-self: start; }
+  .sch-goal-tag { font-size: 11px; }
+  .sch-actions { grid-column: 3; grid-row: 2; opacity: 1; justify-self: end; }
 
   /* ── Filter ── */
   .filter-bar { flex-direction: column; align-items: stretch; gap: 8px; margin-bottom: 16px; }
@@ -469,11 +476,18 @@ body {
   .goal-head .goal-prog { font-size: 12px; }
   .goal-head-actions { opacity: 1; }
   .sub-list { margin-top: 10px; padding-top: 10px; }
-  .sub-item { gap: 8px; padding: 6px 0; }
-  .sub-check { width: 16px; height: 16px; font-size: 9px; }
-  .sub-title { font-size: 13px; }
-  .sub-deadline { font-size: 11px; }
-  .sub-actions { opacity: 1; }
+  .sub-item {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    padding: 6px 0;
+    align-items: center;
+  }
+  .sub-check { grid-row: 1 / 3; grid-column: 1; width: 16px; height: 16px; font-size: 9px; }
+  .sub-title { grid-column: 2 / 4; grid-row: 1; font-size: 13px; line-height: 1.5; }
+  .sub-deadline { grid-column: 2; grid-row: 2; font-size: 11px; }
+  .sub-actions { grid-column: 3; grid-row: 2; opacity: 1; justify-self: end; }
   .btn-add-sub { font-size: 12px; padding: 7px; }
 
   /* ── Notes ── */
