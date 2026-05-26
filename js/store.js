@@ -51,18 +51,31 @@ window.renderPie = function(records, size) {
 /* ══════════ Firebase Setup ══════════ */
 var _docRef = null;
 
+function _syncUI(text, cls) {
+  var el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'sync-status' + (cls ? ' ' + cls : '');
+}
+
 if (typeof firebase !== 'undefined') {
-  firebase.initializeApp({
-    apiKey: "AIzaSyAC3CrP33NTWso3V1pLC4ytAmESX7QY9iE",
-    authDomain: "daily-life-tracker-54ce8.firebaseapp.com",
-    projectId: "daily-life-tracker-54ce8",
-    storageBucket: "daily-life-tracker-54ce8.firebasestorage.app",
-    messagingSenderId: "856154387721",
-    appId: "1:856154387721:web:7accb66d5f5941e6facfd8"
-  });
-  var _db = firebase.firestore();
-  _docRef = _db.collection('sync').doc('data');
-  _db.enablePersistence().catch(function() {});
+  try {
+    firebase.initializeApp({
+      apiKey: "AIzaSyAC3CrP33NTWso3V1pLC4ytAmESX7QY9iE",
+      authDomain: "daily-life-tracker-54ce8.firebaseapp.com",
+      projectId: "daily-life-tracker-54ce8",
+      storageBucket: "daily-life-tracker-54ce8.firebasestorage.app",
+      messagingSenderId: "856154387721",
+      appId: "1:856154387721:web:7accb66d5f5941e6facfd8"
+    });
+    var _db = firebase.firestore();
+    _docRef = _db.collection('sync').doc('data');
+    _db.enablePersistence().catch(function() {});
+  } catch (e) {
+    _syncUI('连接失败', 'err');
+  }
+} else {
+  setTimeout(function() { _syncUI('离线模式（Firebase 未加载）', 'err'); }, 500);
 }
 
 /* ══════════ Store ══════════ */
@@ -85,12 +98,17 @@ window.Store = (function() {
         finances: _get(KEYS.finances),
         goals: _get(KEYS.goals),
         notes: _get(KEYS.notes)
-      }).catch(function() {});
+      }).then(function() {
+        _syncUI('已同步 ✓', 'ok');
+      }).catch(function() {
+        _syncUI('同步失败', 'err');
+      });
     }, 500);
   }
 
   if (_docRef) {
     _docRef.onSnapshot(function(snap) {
+      _syncUI('已同步 ✓', 'ok');
       if (!snap.exists) {
         var hasLocal = localStorage.getItem(KEYS.schedules) || localStorage.getItem(KEYS.finances) ||
           localStorage.getItem(KEYS.goals) || localStorage.getItem(KEYS.notes);
@@ -107,6 +125,8 @@ window.Store = (function() {
         }
       });
       if (changed && window.App && App.current) App.refresh();
+    }, function(err) {
+      _syncUI('同步失败: ' + err.code, 'err');
     });
   }
 

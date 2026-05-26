@@ -76,6 +76,20 @@ body {
   font-weight: 600;
 }
 
+.sidebar-spacer { flex: 1; }
+
+.sync-status {
+  padding: 10px 24px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(237,228,216,0.4);
+  border-top: 1px solid rgba(237,228,216,0.1);
+  letter-spacing: 0.3px;
+}
+
+.sync-status.ok { color: rgba(100,200,130,0.8); }
+.sync-status.err { color: rgba(220,140,140,0.8); }
+
 /* ══════════ MAIN ══════════ */
 .main-content {
   margin-left: 200px;
