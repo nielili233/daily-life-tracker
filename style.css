@@ -395,22 +395,107 @@ body {
 
 /* ══════════ RESPONSIVE ══════════ */
 @media (max-width: 768px) {
+  /* ── Bottom Nav ── */
   .sidebar {
     position: fixed; top: auto; bottom: 0; left: 0; right: 0;
-    width: 100%; height: 56px; flex-direction: row; padding: 0;
+    width: 100%; height: 52px; flex-direction: row; padding: 0;
     border-top: 1px solid rgba(237,228,216,0.12);
   }
   .sidebar-header { display: none; }
+  .sidebar-spacer { display: none; }
+  .sync-status { display: none; }
   .nav-item {
     flex: 1; text-align: center; justify-content: center;
-    padding: 8px 0; font-size: 11px; border-left: none;
-    border-top: 3px solid transparent; flex-direction: column; gap: 2px;
+    padding: 6px 0; font-size: 10px; border-left: none;
+    border-top: 2px solid transparent; flex-direction: column; gap: 1px;
+    color: rgba(237,228,216,0.5);
   }
-  .nav-icon { width: auto; font-size: 13px; }
-  .nav-item.active { border-left-color: transparent; border-top-color: var(--gold); }
-  .main-content { margin-left: 0; margin-bottom: 56px; padding: 20px 16px; }
-  .dash-grid, .sum-cards { grid-template-columns: 1fr; }
-  .filter-bar { flex-direction: column; align-items: stretch; }
-  .pie-wrap { flex-direction: column; }
-  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nav-icon { width: auto; font-size: 14px; }
+  .nav-item.active { border-left-color: transparent; border-top-color: var(--gold); color: #ede4d8; }
+
+  /* ── Layout ── */
+  .main-content { margin-left: 0; margin-bottom: 52px; padding: 20px 14px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px; padding-bottom: 12px; }
+  .page-header h2 { font-size: 18px; }
+  .header-actions { width: 100%; }
+
+  /* ── Cards ── */
+  .card { padding: 12px 14px; margin-bottom: 8px; border-radius: 8px; }
+
+  /* ── Dashboard ── */
+  .dash-grid { grid-template-columns: 1fr; gap: 8px; }
+  .dash-card { padding: 14px 16px; }
+  .dash-card .label { font-size: 10px; margin-bottom: 6px; }
+  .dash-card .big { font-size: 24px; }
+  .dash-card .sub { font-size: 12px; }
+  .goal-row { padding: 8px 0; }
+  .goal-row-head { font-size: 13px; }
+
+  /* ── Schedule ── */
+  .sch-item { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+  .sch-check { width: 20px; height: 20px; flex-shrink: 0; }
+  .sch-time { font-size: 11px; padding: 2px 8px; order: 2; margin-left: 30px; }
+  .sch-title { font-size: 13px; width: calc(100% - 30px); order: 1; }
+  .sch-goal-tag { font-size: 12px; }
+  .sch-actions { opacity: 1; order: 3; margin-left: auto; }
+
+  /* ── Filter ── */
+  .filter-bar { flex-direction: column; align-items: stretch; gap: 8px; margin-bottom: 16px; }
+  .filter-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .filter-tab { padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+  .date-input { width: 100%; }
+
+  /* ── Summary ── */
+  .sum-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+  .sum-card { padding: 10px 10px; }
+  .sum-label { font-size: 9px; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .sum-val { font-size: 16px; }
+
+  /* ── Pie Chart ── */
+  .pie-wrap { flex-direction: column; gap: 14px; padding: 14px 16px; margin-bottom: 16px; }
+  .pie-item { font-size: 12px; }
+
+  /* ── Finance ── */
+  .fin-item { padding: 10px 14px; gap: 10px; }
+  .fin-dot { width: 28px; height: 28px; font-size: 12px; border-radius: 6px; }
+  .fin-cat { font-size: 13px; }
+  .fin-meta { font-size: 11px; }
+  .fin-amt { font-size: 14px; }
+  .fin-actions { opacity: 1; }
+
+  /* ── Goals ── */
+  .goal-card { padding: 14px 16px; }
+  .goal-head h3 { font-size: 14px; }
+  .goal-head .goal-prog { font-size: 12px; }
+  .goal-head-actions { opacity: 1; }
+  .sub-list { margin-top: 10px; padding-top: 10px; }
+  .sub-item { gap: 8px; padding: 6px 0; }
+  .sub-check { width: 16px; height: 16px; font-size: 9px; }
+  .sub-title { font-size: 13px; }
+  .sub-deadline { font-size: 11px; }
+  .sub-actions { opacity: 1; }
+  .btn-add-sub { font-size: 12px; padding: 7px; }
+
+  /* ── Notes ── */
+  .note-card { padding: 12px 14px; }
+  .note-date { font-size: 11px; margin-bottom: 6px; }
+  .note-content { font-size: 13px; line-height: 1.7; }
+  .note-actions { opacity: 1; top: 12px; right: 12px; }
+  .date-group { margin-bottom: 20px; }
+
+  /* ── Modal ── */
+  .modal { padding: 20px; margin: 0 10px; border-radius: 10px; }
+  .modal h3 { font-size: 16px; margin-bottom: 16px; padding-bottom: 10px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input[type="date"],
+  .form-group select,
+  .form-group textarea { font-size: 16px; padding: 8px 12px; }
+  .form-actions { margin-top: 20px; }
+
+  /* ── Misc ── */
+  .empty { padding: 32px 16px; font-size: 13px; }
+  .page-foot { margin-top: 28px; padding-top: 14px; font-size: 11px; }
+  .btn { padding: 7px 14px; font-size: 12px; }
 }
