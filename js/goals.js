@@ -56,7 +56,7 @@ window.Goals = (function() {
     var end = g.completedAt || '';
     var daysText = '';
     if (start && end) {
-      var days = _daysBetween(start, end);
+      var days = g.daysOverride != null && g.daysOverride !== '' ? g.daysOverride : _daysBetween(start, end);
       daysText = start + ' — ' + end + '，用时 ' + days + ' 天';
     }
 
@@ -75,6 +75,7 @@ window.Goals = (function() {
         (g.deadline ? '<div class="goal-deadline">截止: ' + escapeHtml(g.deadline) + '</div>' : '') +
         '<div class="goal-prog">' + done + '/' + total + ' 已完成</div></div>' +
         '<div class="goal-head-actions">' +
+          '<button class="btn-icon" onclick="Goals.showEditArchived(\'' + g.id + '\')">编辑</button>' +
           '<button class="btn-icon" onclick="Goals.restore(\'' + g.id + '\')">恢复</button>' +
         '</div></div>' +
       (subsHtml ? '<div class="sub-list">' + subsHtml + '</div>' : '') +
@@ -121,8 +122,34 @@ window.Goals = (function() {
   }
 
   function restore(id) {
-    Store.updateGoal(id, { archived: false, completedAt: '' });
+    Store.updateGoal(id, { archived: false, completedAt: '', daysOverride: '' });
     App.refresh();
+  }
+
+  function showEditArchived(id) {
+    var g = Store.getGoals().find(function(x) { return x.id === id; });
+    if (!g) return;
+    var start = _startDate(g);
+    var autodays = (start && g.completedAt) ? _daysBetween(start, g.completedAt) : '';
+    var days = g.daysOverride != null && g.daysOverride !== '' ? g.daysOverride : autodays;
+    Modal.show(
+      '<h3>编辑已完成目标</h3><form id="arch-form">' +
+      '<div class="form-group"><label>开始时间</label><input type="text" name="startDate" value="' + escapeHtml(g.startDate || start) + '" placeholder="例如：2026-01-01"></div>' +
+      '<div class="form-group"><label>完成时间</label><input type="text" name="completedAt" value="' + escapeHtml(g.completedAt || '') + '" placeholder="例如：2026-01-15"></div>' +
+      '<div class="form-group"><label>用时（天）</label><input type="text" name="daysOverride" value="' + (days !== '' ? days : '') + '" placeholder="默认自动计算，可手动修正"></div>' +
+      '<div class="form-actions"><button type="button" class="btn" onclick="Modal.hide()">取消</button>' +
+      '<button type="submit" class="btn btn-primary">保存</button></div></form>'
+    );
+    document.getElementById('arch-form').onsubmit = function(e) {
+      e.preventDefault();
+      var fd = new FormData(e.target);
+      Store.updateGoal(id, {
+        startDate: fd.get('startDate') || '',
+        completedAt: fd.get('completedAt') || '',
+        daysOverride: fd.get('daysOverride') || ''
+      });
+      Modal.hide(); App.refresh();
+    };
   }
 
   function toggleArchived() {
@@ -222,6 +249,6 @@ window.Goals = (function() {
     render: render, bind: bind,
     showAddGoal: showAddGoal, showEditGoal: showEditGoal, removeGoal: removeGoal,
     showAddSub: showAddSub, showEditSub: showEditSub, toggleSub: toggleSub, removeSub: removeSub,
-    markComplete: markComplete, restore: restore, toggleArchived: toggleArchived
+    markComplete: markComplete, restore: restore, toggleArchived: toggleArchived, showEditArchived: showEditArchived
   };
 })();
