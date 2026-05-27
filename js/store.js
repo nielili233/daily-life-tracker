@@ -4,7 +4,8 @@ window.escapeHtml = function(s) {
 
 window.CAT_COLORS = {
   '饮食': '#7a2340',
-  '购物': '#8a6aaa',
+  '健康': '#8a6aaa',
+  '护肤': '#aa6a8a',
   '房租': '#4a7a9a',
   '工作': '#4a8a62',
   '娱乐': '#a0844e',
