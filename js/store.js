@@ -10,7 +10,9 @@ window.CAT_COLORS = {
   '娱乐': '#a0844e',
   '交通': '#9a6a3a',
   '宠物': '#8a4a60',
-  '社交': '#3a8a7a'
+  '社交': '#3a8a7a',
+  '学习': '#5a6a8a',
+  '其他': '#7a7a7a'
 };
 
 window.renderPie = function(records, size) {
