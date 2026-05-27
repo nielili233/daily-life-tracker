@@ -16,7 +16,7 @@ window.Dashboard = (function() {
     var monthExp = monthRecs.filter(function(f) { return f.type === 'expense'; }).reduce(function(s, f) { return s + f.amount; }, 0);
 
     var goals = Store.getGoals().filter(function(g) {
-      return g.subGoals.length === 0 || g.subGoals.some(function(s) { return !s.completed; });
+      return !g.archived;
     });
 
     var goalsHtml = '';
