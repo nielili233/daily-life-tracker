@@ -143,10 +143,14 @@ window.Goals = (function() {
     document.getElementById('arch-form').onsubmit = function(e) {
       e.preventDefault();
       var fd = new FormData(e.target);
+      var newStart = fd.get('startDate') || '';
+      var newEnd = fd.get('completedAt') || '';
+      var newDays = fd.get('daysOverride') || '';
+      var auto = (newStart && newEnd) ? String(_daysBetween(newStart, newEnd)) : '';
       Store.updateGoal(id, {
-        startDate: fd.get('startDate') || '',
-        completedAt: fd.get('completedAt') || '',
-        daysOverride: fd.get('daysOverride') || ''
+        startDate: newStart,
+        completedAt: newEnd,
+        daysOverride: (newDays === '' || newDays === auto) ? '' : newDays
       });
       Modal.hide(); App.refresh();
     };
