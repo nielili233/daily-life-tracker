@@ -126,6 +126,17 @@ window.Goals = (function() {
     App.refresh();
   }
 
+  function _calcDays() {
+    var s = document.getElementById('arch-start');
+    var e = document.getElementById('arch-end');
+    var d = document.getElementById('arch-days');
+    if (!s || !e || !d) return;
+    var sv = s.value.trim(), ev = e.value.trim();
+    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(sv) && /^\d{4}-\d{1,2}-\d{1,2}$/.test(ev)) {
+      d.value = _daysBetween(sv, ev);
+    }
+  }
+
   function showEditArchived(id) {
     var g = Store.getGoals().find(function(x) { return x.id === id; });
     if (!g) return;
@@ -134,9 +145,9 @@ window.Goals = (function() {
     var days = g.daysOverride != null && g.daysOverride !== '' ? g.daysOverride : autodays;
     Modal.show(
       '<h3>编辑已完成目标</h3><form id="arch-form">' +
-      '<div class="form-group"><label>开始时间</label><input type="text" name="startDate" value="' + escapeHtml(g.startDate || start) + '" placeholder="例如：2026-01-01"></div>' +
-      '<div class="form-group"><label>完成时间</label><input type="text" name="completedAt" value="' + escapeHtml(g.completedAt || '') + '" placeholder="例如：2026-01-15"></div>' +
-      '<div class="form-group"><label>用时（天）</label><input type="text" name="daysOverride" value="' + (days !== '' ? days : '') + '" placeholder="默认自动计算，可手动修正"></div>' +
+      '<div class="form-group"><label>开始时间</label><input type="text" id="arch-start" name="startDate" value="' + escapeHtml(g.startDate || start) + '" placeholder="例如：2026-05-24" oninput="Goals._calcDays()"></div>' +
+      '<div class="form-group"><label>完成时间</label><input type="text" id="arch-end" name="completedAt" value="' + escapeHtml(g.completedAt || '') + '" placeholder="例如：2026-05-27" oninput="Goals._calcDays()"></div>' +
+      '<div class="form-group"><label>用时（天）</label><input type="text" id="arch-days" name="daysOverride" value="' + (days !== '' ? days : '') + '" placeholder="自动计算，也可手动修正"></div>' +
       '<div class="form-actions"><button type="button" class="btn" onclick="Modal.hide()">取消</button>' +
       '<button type="submit" class="btn btn-primary">保存</button></div></form>'
     );
@@ -253,6 +264,6 @@ window.Goals = (function() {
     render: render, bind: bind,
     showAddGoal: showAddGoal, showEditGoal: showEditGoal, removeGoal: removeGoal,
     showAddSub: showAddSub, showEditSub: showEditSub, toggleSub: toggleSub, removeSub: removeSub,
-    markComplete: markComplete, restore: restore, toggleArchived: toggleArchived, showEditArchived: showEditArchived
+    markComplete: markComplete, restore: restore, toggleArchived: toggleArchived, showEditArchived: showEditArchived, _calcDays: _calcDays
   };
 })();
