@@ -132,8 +132,9 @@ window.Goals = (function() {
     var d = document.getElementById('arch-days');
     if (!s || !e || !d) return;
     var sv = s.value.trim(), ev = e.value.trim();
-    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(sv) && /^\d{4}-\d{1,2}-\d{1,2}$/.test(ev)) {
-      d.value = _daysBetween(sv, ev);
+    var d1 = new Date(sv), d2 = new Date(ev);
+    if (!isNaN(d1.getTime()) && !isNaN(d2.getTime())) {
+      d.value = Math.round((d2 - d1) / 86400000);
     }
   }
 
@@ -145,8 +146,8 @@ window.Goals = (function() {
     var days = g.daysOverride != null && g.daysOverride !== '' ? g.daysOverride : autodays;
     Modal.show(
       '<h3>编辑已完成目标</h3><form id="arch-form">' +
-      '<div class="form-group"><label>开始时间</label><input type="text" id="arch-start" name="startDate" value="' + escapeHtml(g.startDate || start) + '" placeholder="例如：2026-05-24" oninput="Goals._calcDays()"></div>' +
-      '<div class="form-group"><label>完成时间</label><input type="text" id="arch-end" name="completedAt" value="' + escapeHtml(g.completedAt || '') + '" placeholder="例如：2026-05-27" oninput="Goals._calcDays()"></div>' +
+      '<div class="form-group"><label>开始时间</label><input type="text" id="arch-start" name="startDate" value="' + escapeHtml(g.startDate || start) + '" placeholder="例如：2026-05-24" oninput="Goals._calcDays()" onchange="Goals._calcDays()"></div>' +
+      '<div class="form-group"><label>完成时间</label><input type="text" id="arch-end" name="completedAt" value="' + escapeHtml(g.completedAt || '') + '" placeholder="例如：2026-05-27" oninput="Goals._calcDays()" onchange="Goals._calcDays()"></div>' +
       '<div class="form-group"><label>用时（天）</label><input type="text" id="arch-days" name="daysOverride" value="' + (days !== '' ? days : '') + '" placeholder="自动计算，也可手动修正"></div>' +
       '<div class="form-actions"><button type="button" class="btn" onclick="Modal.hide()">取消</button>' +
       '<button type="submit" class="btn btn-primary">保存</button></div></form>'
