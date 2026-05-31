@@ -27,6 +27,10 @@ window.App = {
       if (e.target === e.currentTarget) Modal.hide();
     });
 
+    setTimeout(function() {
+      if (window.Store && Store.rolloverIncomplete) Store.rolloverIncomplete();
+    }, 2000);
+
     this.route();
   },
 

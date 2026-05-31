@@ -130,6 +130,7 @@ window.Store = (function() {
         }
       });
       if (changed && window.App && App.current) App.refresh();
+      if (window.Store && Store.rolloverIncomplete) Store.rolloverIncomplete();
     }, function(err) {
       _syncUI('同步失败: ' + err.code, 'err');
     });
@@ -157,6 +158,51 @@ window.Store = (function() {
   function addSchedule(item) { var all = _get(KEYS.schedules); all.push(Object.assign({}, item, { id: genId(), completed: false })); _set(KEYS.schedules, all); }
   function updateSchedule(id, u) { var all = _get(KEYS.schedules); var i = all.findIndex(function(s) { return s.id === id; }); if (i >= 0) { Object.assign(all[i], u); _set(KEYS.schedules, all); } }
   function deleteSchedule(id) { _set(KEYS.schedules, _get(KEYS.schedules).filter(function(s) { return s.id !== id; })); }
+
+  var _rolledOverToday = null;
+  function rolloverIncomplete() {
+    var t = today();
+    if (_rolledOverToday === t) return false;
+    _rolledOverToday = t;
+
+    var all = _get(KEYS.schedules);
+    var newItems = [];
+    var changed = false;
+
+    all.forEach(function(s) {
+      if (s.date < t && !s.completed && !s.rolledOver) {
+        newItems.push({
+          id: genId(),
+          date: t,
+          time: '',
+          title: s.title,
+          goalText: s.goalText || '',
+          subGoalText: s.subGoalText || '',
+          completed: false,
+          rolledFrom: s.date
+        });
+        s.rolledOver = true;
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      _set(KEYS.schedules, all.concat(newItems));
+      if (window.App && App.current === 'schedule') App.refresh();
+    }
+    return changed;
+  }
+
+  function _scheduleMidnightRollover() {
+    var now = new Date();
+    var next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+    setTimeout(function() {
+      _rolledOverToday = null;
+      rolloverIncomplete();
+      _scheduleMidnightRollover();
+    }, next - now);
+  }
+  _scheduleMidnightRollover();
 
   function getFinances(st, en) {
     var all = _get(KEYS.finances);
@@ -198,6 +244,7 @@ window.Store = (function() {
   return {
     today: today, formatDate: formatDate, getWeekRange: getWeekRange, getMonthRange: getMonthRange,
     getSchedules: getSchedules, getScheduleById: getScheduleById, addSchedule: addSchedule, updateSchedule: updateSchedule, deleteSchedule: deleteSchedule,
+    rolloverIncomplete: rolloverIncomplete,
     getFinances: getFinances, getFinanceById: getFinanceById, addFinance: addFinance, updateFinance: updateFinance, deleteFinance: deleteFinance,
     getGoals: getGoals, addGoal: addGoal, updateGoal: updateGoal, deleteGoal: deleteGoal, addSubGoal: addSubGoal, updateSubGoal: updateSubGoal, deleteSubGoal: deleteSubGoal,
     getNotes: getNotes, getNoteById: getNoteById, addNote: addNote, updateNote: updateNote, deleteNote: deleteNote
