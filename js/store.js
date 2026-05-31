@@ -165,12 +165,15 @@ window.Store = (function() {
     if (_rolledOverToday === t) return false;
     _rolledOverToday = t;
 
+    var yd = new Date(); yd.setDate(yd.getDate() - 1);
+    var y = formatDate(yd);
+
     var all = _get(KEYS.schedules);
     var newItems = [];
     var changed = false;
 
     all.forEach(function(s) {
-      if (s.date < t && !s.completed && !s.rolledOver) {
+      if (s.date === y && !s.completed && !s.rolledOver) {
         newItems.push({
           id: genId(),
           date: t,
