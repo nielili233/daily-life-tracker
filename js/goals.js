@@ -176,7 +176,7 @@ window.Goals = (function() {
   function showAddGoal() {
     Modal.show(
       '<h3>添加大目标</h3><form id="goal-form">' +
-      '<div class="form-group"><label>目标名称</label><input type="text" name="title" required placeholder="例如：投简历实习"></div>' +
+      '<div class="form-group"><label>目标名称</label><input type="text" name="title" required placeholder="例如：减肥10斤"></div>' +
       '<div class="form-group"><label>截止时间</label><input type="text" name="deadline" placeholder="例如：6月底、下周五、不急（可不填）"></div>' +
       '<div class="form-group"><label>开始时间</label><input type="text" name="startDate" placeholder="可不填，默认用创建日期"></div>' +
       '<div class="form-actions"><button type="button" class="btn" onclick="Modal.hide()">取消</button>' +

@@ -14,7 +14,6 @@ window.App = {
     schedule: Schedule,
     finance: Finance,
     goals: Goals,
-    internship: Internship,
     notes: Notes
   },
 

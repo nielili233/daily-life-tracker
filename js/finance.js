@@ -59,7 +59,10 @@ window.Finance = (function() {
     }
 
     return '<div class="page-header"><h2>收支记录</h2>' +
-      '<button class="btn btn-primary" onclick="Finance.showAdd()">添加</button></div>' +
+      '<div class="header-actions">' +
+        '<button class="btn btn-primary" onclick="Finance.showBatch()">批量录入</button>' +
+        '<button class="btn btn-primary" onclick="Finance.showAdd()">添加</button>' +
+      '</div></div>' +
       '<div class="filter-bar"><div class="filter-tabs">' + tabs + '</div>' + dateInput + '</div>' +
       '<div class="sum-cards">' +
         '<div class="sum-card income"><div class="sum-label">总收入</div><div class="sum-val">&yen;' + totalIn.toFixed(2) + '</div></div>' +
@@ -119,5 +122,52 @@ window.Finance = (function() {
 
   function remove(id) { Store.deleteFinance(id); App.refresh(); }
 
-  return { render: render, bind: bind, setFilter: setFilter, showAdd: showAdd, showEdit: showEdit, remove: remove };
+  function showBatch() {
+    Modal.show(
+      '<h3>批量录入收支</h3>' +
+      '<div class="form-group"><label>自然语言输入</label>' +
+        '<textarea id="batch-fin-input" placeholder="例如：早餐花了12，打车28，咖啡6.5，收到客户定金500"></textarea></div>' +
+      '<div id="batch-fin-preview" class="batch-preview"></div>' +
+      '<div class="form-actions">' +
+        '<button type="button" class="btn" onclick="Modal.hide()">取消</button>' +
+        '<button type="button" class="btn" onclick="Finance.previewBatch()">预览</button>' +
+        '<button type="button" class="btn btn-primary" id="batch-fin-confirm" style="display:none" onclick="Finance.confirmBatch()">确认录入</button>' +
+      '</div>'
+    );
+  }
+
+  function previewBatch() {
+    var text = document.getElementById('batch-fin-input').value;
+    var items = NLP.parseFinance(text);
+    var el = document.getElementById('batch-fin-preview');
+    var btn = document.getElementById('batch-fin-confirm');
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty" style="padding:12px">未识别到任何收支记录，请调整输入内容</p>';
+      btn.style.display = 'none';
+      return;
+    }
+    el.innerHTML = '<div class="batch-list">' + items.map(function(it) {
+      var sign = it.type === 'income' ? '+' : '-';
+      var cls = it.type === 'income' ? 'batch-income' : 'batch-expense';
+      return '<div class="batch-item ' + cls + '">' +
+        '<span class="batch-tag">' + it.category + '</span> ' +
+        escapeHtml(it.note) + ' <strong>' + sign + '¥' + it.amount.toFixed(2) + '</strong>' +
+        '</div>';
+    }).join('') + '</div>';
+    btn.style.display = '';
+    window._batchFinItems = items;
+  }
+
+  function confirmBatch() {
+    var items = window._batchFinItems;
+    if (!items || !items.length) return;
+    items.forEach(function(it) {
+      Store.addFinance({ date: it.date, amount: it.amount, type: it.type, category: it.category, paymentMethod: it.paymentMethod, note: it.note });
+    });
+    window._batchFinItems = null;
+    Modal.hide();
+    App.refresh();
+  }
+
+  return { render: render, bind: bind, setFilter: setFilter, showAdd: showAdd, showEdit: showEdit, remove: remove, showBatch: showBatch, previewBatch: previewBatch, confirmBatch: confirmBatch };
 })();

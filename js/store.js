@@ -85,8 +85,7 @@ if (typeof firebase !== 'undefined') {
 
 /* ══════════ Store ══════════ */
 window.Store = (function() {
-  var KEYS = { schedules: 'dlt_schedules', finances: 'dlt_finances', goals: 'dlt_goals', notes: 'dlt_notes',
-    internshipTargets: 'dlt_internship_targets', internshipDone: 'dlt_internship_done' };
+  var KEYS = { schedules: 'dlt_schedules', finances: 'dlt_finances', goals: 'dlt_goals', notes: 'dlt_notes' };
 
   function _get(k) { return JSON.parse(localStorage.getItem(k) || '[]'); }
 
@@ -103,9 +102,7 @@ window.Store = (function() {
         schedules: _get(KEYS.schedules),
         finances: _get(KEYS.finances),
         goals: _get(KEYS.goals),
-        notes: _get(KEYS.notes),
-        internshipTargets: _get(KEYS.internshipTargets),
-        internshipDone: _get(KEYS.internshipDone)
+        notes: _get(KEYS.notes)
       }).then(function() {
         _syncUI('已同步 ✓', 'ok');
       }).catch(function() {
@@ -125,7 +122,7 @@ window.Store = (function() {
       }
       var data = snap.data();
       var changed = false;
-      ['schedules', 'finances', 'goals', 'notes', 'internshipTargets', 'internshipDone'].forEach(function(k) {
+      ['schedules', 'finances', 'goals', 'notes'].forEach(function(k) {
         var remote = JSON.stringify(data[k] || []);
         if (localStorage.getItem(KEYS[k]) !== remote) {
           localStorage.setItem(KEYS[k], remote);
@@ -247,56 +244,12 @@ window.Store = (function() {
   function updateNote(id, u) { var all = _get(KEYS.notes); var i = all.findIndex(function(n) { return n.id === id; }); if (i >= 0) { Object.assign(all[i], u); _set(KEYS.notes, all); } }
   function deleteNote(id) { _set(KEYS.notes, _get(KEYS.notes).filter(function(n) { return n.id !== id; })); }
 
-  /* ── Internship daily application plan ── */
-  var INTERNSHIP_DEFAULT = [
-    { dir: '出海内容 / 海外社媒运营', vals: [15, 25, 10, 8] },
-    { dir: 'PE运营 / 大模型评测', vals: [15, 20, 8, 5] },
-    { dir: 'AI运营 / AIGC内容运营', vals: [20, 25, 10, 8] },
-    { dir: '跨境电商 / Listing运营', vals: [12, 25, 15, 12] },
-    { dir: '海外客户运营 / 商业化运营', vals: [10, 25, 15, 12] },
-    { dir: '短视频 / 新媒体 / 创作者运营', vals: [20, 30, 10, 8] }
-  ];
-
-  function getInternshipTargets() {
-    var rows = _get(KEYS.internshipTargets);
-    if (!rows || !rows.length) {
-      return INTERNSHIP_DEFAULT.map(function(r) { return { dir: r.dir, vals: r.vals.slice() }; });
-    }
-    return rows;
-  }
-
-  function setInternshipVal(ri, ci, val) {
-    var rows = getInternshipTargets();
-    if (rows[ri] && rows[ri].vals[ci] != null) {
-      var n = parseInt(val, 10);
-      rows[ri].vals[ci] = (isNaN(n) || n < 0) ? 0 : n;
-      _set(KEYS.internshipTargets, rows);
-    }
-  }
-
-  function getInternshipDone() {
-    var obj = _get(KEYS.internshipDone);
-    if (!obj || Array.isArray(obj) || obj.date !== today()) return { date: today(), cells: {} };
-    return obj;
-  }
-
-  function toggleInternshipCell(ri, ci) {
-    var d = getInternshipDone();
-    var k = ri + '-' + ci;
-    if (d.cells[k]) delete d.cells[k]; else d.cells[k] = true;
-    _set(KEYS.internshipDone, d);
-  }
-
-  function resetInternshipDone() { _set(KEYS.internshipDone, { date: today(), cells: {} }); }
-
   return {
     today: today, formatDate: formatDate, getWeekRange: getWeekRange, getMonthRange: getMonthRange,
     getSchedules: getSchedules, getScheduleById: getScheduleById, addSchedule: addSchedule, updateSchedule: updateSchedule, deleteSchedule: deleteSchedule,
     rolloverIncomplete: rolloverIncomplete,
     getFinances: getFinances, getFinanceById: getFinanceById, addFinance: addFinance, updateFinance: updateFinance, deleteFinance: deleteFinance,
     getGoals: getGoals, addGoal: addGoal, updateGoal: updateGoal, deleteGoal: deleteGoal, addSubGoal: addSubGoal, updateSubGoal: updateSubGoal, deleteSubGoal: deleteSubGoal,
-    getNotes: getNotes, getNoteById: getNoteById, addNote: addNote, updateNote: updateNote, deleteNote: deleteNote,
-    getInternshipTargets: getInternshipTargets, setInternshipVal: setInternshipVal,
-    getInternshipDone: getInternshipDone, toggleInternshipCell: toggleInternshipCell, resetInternshipDone: resetInternshipDone
+    getNotes: getNotes, getNoteById: getNoteById, addNote: addNote, updateNote: updateNote, deleteNote: deleteNote
   };
 })();
