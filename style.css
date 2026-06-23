@@ -428,6 +428,191 @@ body {
   text-align: center;
 }
 
+/* ══════════ SPEAKING PRACTICE ══════════ */
+.spk-stats {
+  display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.spk-stat {
+  font-size: 14px; color: var(--text-mid); font-weight: 500;
+}
+.spk-stat strong { color: var(--wine); font-weight: 700; }
+.spk-fire { font-size: 16px; }
+
+.spk-progress {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+}
+.spk-progress-bar {
+  flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden;
+}
+.spk-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); border-radius: 4px;
+  transition: width 0.6s ease;
+}
+.spk-progress-pct { font-size: 13px; font-weight: 700; color: var(--gold-dark); }
+
+/* ── Staircase ── */
+.spk-staircase {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); border: 1px solid var(--border-light);
+  padding: 24px; margin-bottom: 20px; overflow-x: auto;
+}
+
+.spk-staircase-scroll { min-width: 0; }
+
+.spk-stair-row {
+  display: flex; gap: 8px; justify-content: center; margin-bottom: 8px;
+}
+
+.spk-step {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  position: relative; flex-shrink: 0;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.spk-step-empty { visibility: hidden; }
+
+.spk-step-future {
+  background: var(--cream); border-color: var(--border); color: var(--text-hint);
+}
+
+.spk-step-done {
+  background: #f5e6b8; border-color: #e8d490; color: #7a6a30;
+}
+
+.spk-step-missed {
+  background: #d8d4cc; border-color: #c0bbb2; color: #6a6660;
+}
+
+.spk-step-resumed {
+  background: #b8d8f0; border-color: #90c0e0; color: #2a5a80;
+}
+
+.spk-step-streak {
+  background: #e8c840; border-color: #d0b030; color: #5a4a10;
+  box-shadow: 0 0 8px rgba(232, 200, 64, 0.4);
+}
+
+.spk-step-current {
+  transform: scale(1.15);
+  box-shadow: 0 2px 12px rgba(92, 26, 42, 0.15);
+  z-index: 2;
+}
+
+.spk-step-milestone { border-width: 2px; }
+.spk-step-milestone .spk-step-num { font-size: 15px; }
+
+.spk-milestone-badge {
+  display: none;
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--wine); color: #ede4d8; font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 6px; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10;
+}
+.spk-step-milestone:hover .spk-milestone-badge { display: block; }
+
+/* ── Character ── */
+.spk-character {
+  position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center;
+  animation: spkBounce 1.5s ease-in-out infinite;
+  z-index: 5;
+}
+
+.spk-char-head {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--wine); border: 2px solid #ede4d8;
+}
+
+.spk-char-body {
+  width: 10px; height: 12px; border-radius: 3px 3px 0 0;
+  background: var(--wine); margin-top: 1px;
+}
+
+@keyframes spkBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* ── Practice area ── */
+.spk-practice {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); border: 1px solid var(--border-light);
+  padding: 24px; margin-bottom: 20px; text-align: center;
+}
+
+.spk-standard {
+  font-size: 13px; color: var(--text-sec); margin-bottom: 16px; font-weight: 500;
+}
+
+.spk-actions { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.spk-or { color: var(--text-hint); font-size: 13px; font-weight: 500; }
+
+.spk-btn-record { font-size: 15px; padding: 12px 28px; }
+
+.spk-btn-upload {
+  cursor: pointer; font-size: 14px;
+}
+
+.spk-recording { padding: 12px 0; }
+.spk-timer {
+  font-size: 36px; font-weight: 800; color: var(--wine); font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.spk-rec-dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--coral); margin-right: 6px;
+  animation: spkPulse 1s ease-in-out infinite;
+}
+@keyframes spkPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.spk-rec-actions { margin-top: 12px; }
+
+.spk-preview { padding: 12px 0; }
+.spk-audio-player { width: 100%; max-width: 360px; margin-bottom: 14px; border-radius: 8px; }
+.spk-preview-actions { display: flex; gap: 10px; justify-content: center; }
+
+.spk-done-msg {
+  font-size: 16px; font-weight: 700; color: var(--sage); margin-bottom: 12px;
+}
+.spk-audio-replay { margin-top: 8px; }
+
+/* ── Milestones ── */
+.spk-milestones, .spk-history {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); border: 1px solid var(--border-light);
+  padding: 20px 24px; margin-bottom: 16px;
+}
+
+.spk-section-title {
+  font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border-light);
+}
+
+.spk-ms-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; font-size: 13px; color: var(--text-sec);
+}
+.spk-ms-reached { color: var(--text); }
+.spk-ms-step { font-weight: 700; color: var(--gold-dark); min-width: 52px; }
+.spk-ms-text { flex: 1; }
+.spk-ms-check { color: var(--sage); font-weight: 700; }
+
+/* ── History ── */
+.spk-history-list { display: flex; flex-direction: column; gap: 4px; }
+.spk-hist-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; font-size: 13px; color: var(--text-mid);
+  border-bottom: 1px solid var(--border-light);
+}
+.spk-hist-item:last-child { border-bottom: none; }
+.spk-hist-date { font-weight: 600; min-width: 42px; color: var(--text-sec); }
+.spk-hist-icon { font-size: 14px; }
+.spk-hist-step { font-weight: 500; }
+.spk-hist-missed { opacity: 0.6; }
+
 /* ══════════ RESPONSIVE ══════════ */
 @media (max-width: 768px) {
   /* ── Bottom Nav ── */
@@ -546,4 +731,13 @@ body {
   .empty { padding: 32px 16px; font-size: 13px; }
   .page-foot { margin-top: 28px; padding-top: 14px; font-size: 11px; }
   .btn { padding: 7px 14px; font-size: 12px; }
+
+  /* ── Speaking ── */
+  .spk-stats { flex-direction: column; gap: 6px; }
+  .spk-staircase { padding: 14px; }
+  .spk-step { width: 38px; height: 38px; font-size: 12px; border-radius: 8px; }
+  .spk-character { display: none; }
+  .spk-timer { font-size: 28px; }
+  .spk-practice { padding: 16px; }
+  .spk-milestones, .spk-history { padding: 14px 16px; }
 }

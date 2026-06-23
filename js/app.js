@@ -14,6 +14,7 @@ window.App = {
     schedule: Schedule,
     finance: Finance,
     goals: Goals,
+    speaking: Speaking,
     notes: Notes
   },
 

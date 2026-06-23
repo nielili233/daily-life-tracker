@@ -85,7 +85,7 @@ if (typeof firebase !== 'undefined') {
 
 /* ══════════ Store ══════════ */
 window.Store = (function() {
-  var KEYS = { schedules: 'dlt_schedules', finances: 'dlt_finances', goals: 'dlt_goals', notes: 'dlt_notes' };
+  var KEYS = { schedules: 'dlt_schedules', finances: 'dlt_finances', goals: 'dlt_goals', notes: 'dlt_notes', speaking: 'dlt_speaking' };
 
   function _get(k) { return JSON.parse(localStorage.getItem(k) || '[]'); }
 
@@ -102,7 +102,8 @@ window.Store = (function() {
         schedules: _get(KEYS.schedules),
         finances: _get(KEYS.finances),
         goals: _get(KEYS.goals),
-        notes: _get(KEYS.notes)
+        notes: _get(KEYS.notes),
+        speaking: _get(KEYS.speaking)
       }).then(function() {
         _syncUI('已同步 ✓', 'ok');
       }).catch(function() {
@@ -116,13 +117,13 @@ window.Store = (function() {
       _syncUI('已同步 ✓', 'ok');
       if (!snap.exists) {
         var hasLocal = localStorage.getItem(KEYS.schedules) || localStorage.getItem(KEYS.finances) ||
-          localStorage.getItem(KEYS.goals) || localStorage.getItem(KEYS.notes);
+          localStorage.getItem(KEYS.goals) || localStorage.getItem(KEYS.notes) || localStorage.getItem(KEYS.speaking);
         if (hasLocal) _pushToCloud();
         return;
       }
       var data = snap.data();
       var changed = false;
-      ['schedules', 'finances', 'goals', 'notes'].forEach(function(k) {
+      ['schedules', 'finances', 'goals', 'notes', 'speaking'].forEach(function(k) {
         var remote = JSON.stringify(data[k] || []);
         if (localStorage.getItem(KEYS[k]) !== remote) {
           localStorage.setItem(KEYS[k], remote);
@@ -244,12 +245,35 @@ window.Store = (function() {
   function updateNote(id, u) { var all = _get(KEYS.notes); var i = all.findIndex(function(n) { return n.id === id; }); if (i >= 0) { Object.assign(all[i], u); _set(KEYS.notes, all); } }
   function deleteNote(id) { _set(KEYS.notes, _get(KEYS.notes).filter(function(n) { return n.id !== id; })); }
 
+  /* ── Speaking Practice ── */
+  var _defaultSpeaking = {
+    settings: {
+      routeName: '英语口语 30 天挑战',
+      totalSteps: 30,
+      practiceStandard: '每天至少 30 秒英语口语录音',
+      reminderTime: '20:00',
+      milestones: { '7': '坚持一周了！继续保持 💪', '15': '半个月！你已经养成习惯了 🎉', '30': '挑战完成！你做到了 🏆' }
+    },
+    currentStep: 0,
+    history: {},
+    lastPracticeDate: ''
+  };
+
+  function getSpeaking() {
+    var raw = localStorage.getItem(KEYS.speaking);
+    if (!raw) return JSON.parse(JSON.stringify(_defaultSpeaking));
+    try { return JSON.parse(raw); } catch(e) { return JSON.parse(JSON.stringify(_defaultSpeaking)); }
+  }
+
+  function setSpeaking(data) { _set(KEYS.speaking, data); }
+
   return {
     today: today, formatDate: formatDate, getWeekRange: getWeekRange, getMonthRange: getMonthRange,
     getSchedules: getSchedules, getScheduleById: getScheduleById, addSchedule: addSchedule, updateSchedule: updateSchedule, deleteSchedule: deleteSchedule,
     rolloverIncomplete: rolloverIncomplete,
     getFinances: getFinances, getFinanceById: getFinanceById, addFinance: addFinance, updateFinance: updateFinance, deleteFinance: deleteFinance,
     getGoals: getGoals, addGoal: addGoal, updateGoal: updateGoal, deleteGoal: deleteGoal, addSubGoal: addSubGoal, updateSubGoal: updateSubGoal, deleteSubGoal: deleteSubGoal,
-    getNotes: getNotes, getNoteById: getNoteById, addNote: addNote, updateNote: updateNote, deleteNote: deleteNote
+    getNotes: getNotes, getNoteById: getNoteById, addNote: addNote, updateNote: updateNote, deleteNote: deleteNote,
+    getSpeaking: getSpeaking, setSpeaking: setSpeaking
   };
 })();
