@@ -141,67 +141,60 @@ window.Speaking = (function() {
     return count;
   }
 
-  /* ══════════ Render: Staircase ══════════ */
+  /* ══════════ Render: Staircase (side-view) ══════════ */
   function _renderStaircase() {
     if (!_data || !_data.settings) return '';
     var total = _data.settings.totalSteps;
     var cur = _data.currentStep;
-    var cols = window.innerWidth <= 600 ? 3 : 5;
-    var rows = Math.ceil(total / cols);
-    var milestones = _data.settings.milestones || {};
+
+    // dimensions
+    var stepW = window.innerWidth <= 600 ? 36 : 52;
+    var stepH = 22;
+    var gap = window.innerWidth <= 600 ? 4 : 6;
+
+    var containerW = (stepW + gap) * total + 40;
+    var containerH = stepH * total + 60;
 
     var html = '<div class="spk-staircase">';
-    html += '<div class="spk-staircase-scroll">';
+    html += '<div class="spk-staircase-scroll" style="width:' + containerW + 'px;height:' + containerH + 'px">';
 
-    for (var r = 0; r < rows; r++) {
-      html += '<div class="spk-stair-row">';
-      for (var c = 0; c < cols; c++) {
-        var idx;
-        if (r % 2 === 0) {
-          idx = r * cols + c + 1; // L→R
-        } else {
-          idx = r * cols + (cols - 1 - c) + 1; // R→L
+    for (var i = 1; i <= total; i++) {
+      // determine status
+      var status = 'future';
+      var dateForStep = '';
+      for (var date in _data.history) {
+        if (_data.history[date].step === i) {
+          status = _data.history[date].status;
+          dateForStep = date;
+          break;
         }
-        if (idx > total) { html += '<div class="spk-step spk-step-empty"></div>'; continue; }
-
-        var status = 'future';
-        var dateForStep = '';
-        for (var date in _data.history) {
-          if (_data.history[date].step === idx) {
-            status = _data.history[date].status;
-            dateForStep = date;
-            break;
-          }
-        }
-        // step that is current but no history entry = step 0
-        if (idx === 0) status = 'future';
-
-        var isCurrent = (idx === cur);
-        var isMilestone = milestones[String(idx)];
-        var cls = 'spk-step spk-step-' + status;
-        if (isCurrent) cls += ' spk-step-current';
-        if (isMilestone) cls += ' spk-step-milestone';
-
-        var title = idx;
-        if (isMilestone) title = '🏆';
-
-        html += '<div class="' + cls + '" data-step="' + idx + '" title="' + (dateForStep || '第' + idx + '格') + '">' +
-          '<span class="spk-step-num">' + title + '</span>';
-
-        if (isCurrent) {
-          html += '<div class="spk-character">' +
-            '<div class="spk-char-head"></div>' +
-            '<div class="spk-char-body"></div>' +
-            '</div>';
-        }
-
-        if (isMilestone) {
-          html += '<div class="spk-milestone-badge">' + escapeHtml(milestones[String(idx)]) + '</div>';
-        }
-
-        html += '</div>';
       }
-      html += '</div>';
+
+      var left = (i - 1) * (stepW + gap);
+      var bottom = (i - 1) * stepH;
+      var isCurrent = (i === cur);
+
+      // step block
+      html += '<div class="spk-stair spk-stair-' + status + (isCurrent ? ' spk-stair-current' : '') + '" ' +
+        'style="left:' + left + 'px;bottom:' + bottom + 'px;width:' + stepW + 'px;height:' + stepH + 'px" ' +
+        'title="' + (dateForStep || '第' + i + '格') + '">' +
+        '<span class="spk-stair-num">' + i + '</span></div>';
+
+      // character on current step
+      if (isCurrent) {
+        html += '<div class="spk-character" style="left:' + (left + stepW / 2 - 14) + 'px;bottom:' + (bottom + stepH + 2) + 'px">' +
+          '<svg viewBox="0 0 28 44" width="28" height="44">' +
+            '<circle cx="14" cy="7" r="6" fill="var(--wine)" stroke="#ede4d8" stroke-width="1.5"/>' +
+            '<ellipse cx="14" cy="8.5" rx="2.5" ry="1" fill="#ede4d8" opacity="0.6"/>' +
+            '<rect x="8" y="14" width="12" height="14" rx="4" fill="var(--wine)"/>' +
+            '<rect x="10" y="14" width="8" height="5" rx="2" fill="#ede4d8" opacity="0.25"/>' +
+            '<line x1="10" y1="28" x2="7" y2="40" stroke="var(--wine)" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<line x1="18" y1="28" x2="21" y2="40" stroke="var(--wine)" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<line x1="8" y1="18" x2="3" y2="26" stroke="var(--wine)" stroke-width="2" stroke-linecap="round"/>' +
+            '<line x1="20" y1="18" x2="25" y2="14" stroke="var(--wine)" stroke-width="2" stroke-linecap="round"/>' +
+            '<circle cx="25" cy="13" r="2" fill="#e8c840"/>' +
+          '</svg></div>';
+      }
     }
 
     html += '</div></div>';
@@ -256,25 +249,6 @@ window.Speaking = (function() {
     return m + ':' + String(s).padStart(2, '0');
   }
 
-  /* ══════════ Render: Milestones ══════════ */
-  function _renderMilestones() {
-    var ms = _data.settings.milestones || {};
-    var keys = Object.keys(ms).sort(function(a, b) { return parseInt(a) - parseInt(b); });
-    if (keys.length === 0) return '';
-
-    var html = '<div class="spk-milestones"><div class="spk-section-title">🏆 里程碑</div>';
-    keys.forEach(function(k) {
-      var reached = _data.currentStep >= parseInt(k);
-      html += '<div class="spk-ms-item' + (reached ? ' spk-ms-reached' : '') + '">' +
-        '<span class="spk-ms-step">第 ' + k + ' 格</span>' +
-        '<span class="spk-ms-text">' + escapeHtml(ms[k]) + '</span>' +
-        (reached ? '<span class="spk-ms-check">✓</span>' : '') +
-        '</div>';
-    });
-    html += '</div>';
-    return html;
-  }
-
   /* ══════════ Render: History ══════════ */
   function _renderHistory() {
     var dates = Object.keys(_data.history).sort(function(a, b) { return b.localeCompare(a); });
@@ -299,7 +273,6 @@ window.Speaking = (function() {
   /* ══════════ Render: Settings Modal ══════════ */
   function showSettings() {
     var s = _data.settings;
-    var ms = s.milestones || {};
     Modal.show(
       '<h3>练习设置</h3><form id="spk-settings-form">' +
       '<div class="form-group"><label>路线名称</label>' +
@@ -310,12 +283,6 @@ window.Speaking = (function() {
         '<input type="text" name="practiceStandard" value="' + escapeHtml(s.practiceStandard) + '"></div>' +
       '<div class="form-group"><label>提醒时间</label>' +
         '<input type="time" name="reminderTime" value="' + s.reminderTime + '"></div>' +
-      '<div class="form-group"><label>第 7 格鼓励语</label>' +
-        '<input type="text" name="ms7" value="' + escapeHtml(ms['7'] || '') + '" placeholder="可不填"></div>' +
-      '<div class="form-group"><label>第 15 格鼓励语</label>' +
-        '<input type="text" name="ms15" value="' + escapeHtml(ms['15'] || '') + '" placeholder="可不填"></div>' +
-      '<div class="form-group"><label>第 30 格鼓励语</label>' +
-        '<input type="text" name="ms30" value="' + escapeHtml(ms['30'] || '') + '" placeholder="可不填"></div>' +
       '<div class="form-actions">' +
         '<button type="button" class="btn" onclick="Modal.hide()">取消</button>' +
         '<button type="submit" class="btn btn-primary">保存</button></div></form>'
@@ -323,20 +290,10 @@ window.Speaking = (function() {
     document.getElementById('spk-settings-form').onsubmit = function(e) {
       e.preventDefault();
       var fd = new FormData(e.target);
-      var milestones = {};
-      var m7 = fd.get('ms7'); if (m7) milestones['7'] = m7;
-      var m15 = fd.get('ms15'); if (m15) milestones['15'] = m15;
-      var m30 = fd.get('ms30'); if (m30) milestones['30'] = m30;
-      // keep custom milestones
-      var oldMs = _data.settings.milestones || {};
-      for (var k in oldMs) { if (!milestones[k] && k !== '7' && k !== '15' && k !== '30') milestones[k] = oldMs[k]; }
-
       _data.settings.routeName = fd.get('routeName') || _data.settings.routeName;
       _data.settings.totalSteps = parseInt(fd.get('totalSteps')) || 30;
       _data.settings.practiceStandard = fd.get('practiceStandard') || _data.settings.practiceStandard;
       _data.settings.reminderTime = fd.get('reminderTime') || '20:00';
-      _data.settings.milestones = milestones;
-      // clamp currentStep
       if (_data.currentStep >= _data.settings.totalSteps) _data.currentStep = _data.settings.totalSteps;
       _save();
       Modal.hide();
@@ -501,9 +458,6 @@ window.Speaking = (function() {
 
     // practice area
     html += _renderPractice();
-
-    // milestones
-    html += _renderMilestones();
 
     // history
     html += _renderHistory();
