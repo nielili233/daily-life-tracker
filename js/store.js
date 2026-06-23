@@ -123,13 +123,21 @@ window.Store = (function() {
       }
       var data = snap.data();
       var changed = false;
-      ['schedules', 'finances', 'goals', 'notes', 'speaking'].forEach(function(k) {
+      ['schedules', 'finances', 'goals', 'notes'].forEach(function(k) {
         var remote = JSON.stringify(data[k] || []);
         if (localStorage.getItem(KEYS[k]) !== remote) {
           localStorage.setItem(KEYS[k], remote);
           changed = true;
         }
       });
+      // speaking: only sync if remote has valid object (not empty array from old data)
+      if (data.speaking && typeof data.speaking === 'object' && !Array.isArray(data.speaking) && data.speaking.settings) {
+        var spkRemote = JSON.stringify(data.speaking);
+        if (localStorage.getItem(KEYS.speaking) !== spkRemote) {
+          localStorage.setItem(KEYS.speaking, spkRemote);
+          changed = true;
+        }
+      }
       if (changed && window.App && App.current) App.refresh();
       if (window.Store && Store.rolloverIncomplete) Store.rolloverIncomplete();
     }, function(err) {
@@ -262,7 +270,14 @@ window.Store = (function() {
   function getSpeaking() {
     var raw = localStorage.getItem(KEYS.speaking);
     if (!raw) return JSON.parse(JSON.stringify(_defaultSpeaking));
-    try { return JSON.parse(raw); } catch(e) { return JSON.parse(JSON.stringify(_defaultSpeaking)); }
+    try {
+      var d = JSON.parse(raw);
+      // guard: Firebase may sync speaking as [] if old data had no speaking field
+      if (!d || typeof d !== 'object' || Array.isArray(d) || !d.settings) {
+        return JSON.parse(JSON.stringify(_defaultSpeaking));
+      }
+      return d;
+    } catch(e) { return JSON.parse(JSON.stringify(_defaultSpeaking)); }
   }
 
   function setSpeaking(data) { _set(KEYS.speaking, data); }
