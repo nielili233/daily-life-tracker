@@ -56,6 +56,7 @@ window.Speaking = (function() {
 
   /* ══════════ Daily rollback check ══════════ */
   function _checkRollback(data) {
+    if (!data || !data.history || !data.settings) return data;
     var td = _today();
     var last = data.lastPracticeDate;
     if (!last) return data; // never practiced, nothing to rollback
@@ -109,6 +110,7 @@ window.Speaking = (function() {
 
   /* ══════════ Stats ══════════ */
   function _calcStreak() {
+    if (!_data || !_data.history) return 0;
     var td = _today();
     var streak = 0;
     var d = td;
@@ -130,6 +132,7 @@ window.Speaking = (function() {
   }
 
   function _totalDone() {
+    if (!_data || !_data.history) return 0;
     var count = 0;
     for (var k in _data.history) {
       var s = _data.history[k].status;
@@ -140,6 +143,7 @@ window.Speaking = (function() {
 
   /* ══════════ Render: Staircase ══════════ */
   function _renderStaircase() {
+    if (!_data || !_data.settings) return '';
     var total = _data.settings.totalSteps;
     var cur = _data.currentStep;
     var cols = window.innerWidth <= 600 ? 3 : 5;
